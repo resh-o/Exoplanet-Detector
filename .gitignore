@@ -1,0 +1,137 @@
+# ============================================
+# Python
+# ============================================
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+eggs/
+parts/
+var/
+sdist/
+wheels/
+*.egg-link
+.installed.cfg
+lib/
+lib64/
+MANIFEST
+.Python
+develop-eggs/
+
+# ============================================
+# Virtual Environments
+# ============================================
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+.python-version
+pipenv/
+poetry.lock
+Pipfile.lock
+
+# ============================================
+# Claude & AI Files
+# ============================================
+.claude/
+.claude_files/
+CLAUDE.md
+claude_context/
+.cursorrules
+.cursorignore
+.cursor/
+*.claude
+*.anthropic
+ai_context/
+llm_context/
+prompts/private/
+
+# ============================================
+# Model Weights & Training Data
+# ============================================
+models/*.h5
+models/*.pt
+models/*.pth
+models/*.pb
+models/*.ckpt
+models/*.weights
+models/*.keras
+training_data/
+*.tfrecord
+checkpoints/
+
+# ============================================
+# Kepler Data Cache
+# ============================================
+cache/
+*.fits
+*.fit
+*.fts
+lightkurve-cache/
+mastDownload/
+
+# ============================================
+# Outputs (generated files)
+# ============================================
+outputs/plots/*.png
+outputs/plots/*.pdf
+outputs/plots/*.svg
+outputs/results/*.json
+*.log
+exohunter.log
+
+# ============================================
+# Jupyter Notebooks (checkpoints)
+# ============================================
+.ipynb_checkpoints/
+*.ipynb
+
+# ============================================
+# IDEs
+# ============================================
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# ============================================
+# Environment Variables & Secrets
+# ============================================
+.env
+.env.local
+.env.*.local
+*.pem
+*.key
+secrets.json
+config.local.py
+
+# ============================================
+# Testing & Coverage
+# ============================================
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+coverage.xml
+*.cover
+.hypothesis/
+
+# ============================================
+# Misc
+# ============================================
+*.bak
+*.tmp
+*.temp
+*.orig
+.sass-cache/
+node_modules/

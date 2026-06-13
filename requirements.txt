@@ -1,0 +1,23 @@
+# Core astronomy
+lightkurve>=2.4.0
+astropy>=5.3.0
+
+# Numerical computing
+numpy>=1.24.0
+scipy>=1.10.0
+
+# Machine learning (CNN classifier)
+tensorflow>=2.13.0
+
+# Visualization
+matplotlib>=3.7.0
+
+# CLI and terminal output
+click>=8.1.0
+rich>=13.4.0
+
+# Data handling
+pandas>=2.0.0
+
+# HTTP requests (NASA archive)
+requests>=2.31.0
