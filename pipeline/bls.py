@@ -75,9 +75,14 @@ def find_best_period(
 
     bls = BoxLeastSquares(time, flux)
 
+    # BLS requires max(duration) < min(period); filter the duration grid.
+    safe_durations = _TRIAL_DURATIONS[_TRIAL_DURATIONS < _P_MIN * 0.9]
+    if len(safe_durations) == 0:
+        safe_durations = np.array([_P_MIN * 0.1])
+
     try:
         result = bls.autopower(
-            _TRIAL_DURATIONS,
+            safe_durations,
             minimum_period=_P_MIN,
             maximum_period=_P_MAX,
             minimum_n_transit=_MIN_TRANSITS,

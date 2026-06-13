@@ -294,7 +294,8 @@ def train(data_path: str, epochs: int, batch_size: int) -> None:
         f"({int(y.sum())} positives, {int(len(y) - y.sum())} negatives)[/cyan]"
     )
 
-    model = train_model(
+    from pipeline.classifier import train_model as _train_model
+    model = _train_model(
         X_global, X_local, y, epochs=epochs, batch_size=batch_size
     )
     console.print("[green]Training complete.[/green]")
