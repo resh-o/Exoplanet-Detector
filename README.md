@@ -37,44 +37,101 @@ bash setup.sh
 
 ---
 
+## Python 3.13 Compatibility
+
+Python 3.13 changed how `logging.getLogger()` returns pre-existing logger
+instances, which causes astropy's `_init_log()` to call `_set_defaults()` on
+a plain `logging.Logger` object that doesn't have that method — resulting in:
+
+```
+AttributeError: 'Logger' object has no attribute '_set_defaults'
+```
+
+### Automatic fix (recommended)
+
+`setup.bat` handles everything in one step — it creates the venv, installs
+dependencies, and applies the patch:
+
+```bat
+setup.bat
+```
+
+After setup, use `parallax.bat` to run Parallax without manually activating
+the venv:
+
+```bat
+parallax.bat analyze --star "Kepler-90" --mission kepler
+```
+
+### Manual fix
+
+If you already have dependencies installed and just hit the error:
+
+```bash
+python patches/patch_astropy.py
+```
+
+The script locates `astropy/logger.py` anywhere on `sys.path` and wraps the
+`_set_defaults()` call in a `try/except AttributeError`. It is idempotent —
+safe to run multiple times.
+
+### What the patch does
+
+In `astropy/logger.py` inside `_init_log()`, it changes:
+
+```python
+log._set_defaults()
+```
+
+to:
+
+```python
+try:
+    log._set_defaults()
+except AttributeError:
+    pass
+```
+
+This has no effect on Python 3.10/3.11 (where the method always exists) and
+silently skips it on Python 3.13 (where it may not).
+
+---
+
 ## Known Compatibility Notes
 
-The dependency stack has several hard constraints caused by numpy 2.0 breaking
-changes and astropy C-extension wheel availability. The `requirements.txt` is
-pinned to versions that are verified to install from pre-built wheels with no
-C compiler required.
+The `requirements.txt` is pinned to versions that install from pre-built
+wheels on Python 3.13 with no C compiler required.
 
-### Python 3.13 (current `requirements.txt`)
+| Package | Pinned version | Why |
+|---------|---------------|-----|
+| `numpy` | `2.4.6` | Python 3.13 wheels available; numpy 2.0+ required. |
+| `astropy` | `7.0.0` | Python 3.13 wheels; numpy 2.x compatible (no `np.in1d`). Requires the `_set_defaults` patch above. |
+| `lightkurve` | `2.4.2` | Works with astropy 7.x (`astropy>=5.0` required). |
+| `tensorflow` | `2.19.0` | TF 2.13 caps at Python 3.11; 2.19+ has Python 3.13 wheels. |
 
-| Package | Pinned version | Why this version |
-|---------|---------------|-----------------|
-| `numpy` | `2.4.6` | Newest stable; Python 3.13 wheels available. |
-| `astropy` | `7.2.0` | First astropy line with Python 3.13 wheels **and** full numpy 2.x compatibility. astropy 5.x / 6.x call `np.in1d` which numpy 2.0 removed; astropy 6.1.x also has a broken `_set_defaults` logger method. |
-| `lightkurve` | `2.4.2` | Works with astropy 7.x (requires `astropy>=5.0`). |
+### Python 3.10 / 3.11 alternative stack
 
-### Python 3.10 / 3.11 (alternative pinned stack)
-
-If you are on Python 3.10 or 3.11 you can substitute these versions, which
-use smaller pre-built wheels and have a lighter memory footprint:
+On Python 3.10 or 3.11 you can use smaller wheels and skip the patch:
 
 ```
 astropy==5.3.4
 numpy==1.26.4
 scipy==1.11.4
 matplotlib==3.7.5
+tensorflow==2.13.0
 ```
 
-> **Note:** Do **not** mix astropy 5.x with numpy 2.x — astropy 5.x calls
-> `np.in1d` which was removed in numpy 2.0 and will raise an `AttributeError`
-> on import.
+> Do **not** mix astropy 5.x with numpy 2.x — astropy 5.x calls `np.in1d`
+> which numpy 2.0 removed.
 
-Always install inside a virtual environment so system packages do not interfere:
+Always use a virtual environment:
 
 ```bash
 python -m venv venv
 # Windows:   venv\Scripts\activate
 # Mac/Linux: source venv/bin/activate
 pip install -r requirements.txt
+python patches/patch_astropy.py   # Python 3.13 only
 ```
 
 ---

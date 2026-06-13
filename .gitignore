@@ -137,3 +137,9 @@ coverage.xml
 *.orig
 .sass-cache/
 node_modules/
+
+# ============================================
+# Parallax — local runtime files
+# ============================================
+patches/__pycache__/
+*.bat

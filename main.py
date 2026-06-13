@@ -424,15 +424,15 @@ def _print_summary_panel(results: dict) -> None:
 
 
 def _status(msg: str) -> None:
-    console.print(f"  [dim]→[/dim] {msg}", end=" ")
+    console.print(f"  [dim]->[/dim] {msg}", end=" ")
 
 
 def _ok(msg: str) -> None:
-    console.print(f"[green]✓[/green]  {msg}")
+    console.print(f"[green]OK[/green]  {msg}")
 
 
 def _warn(msg: str) -> None:
-    console.print(f"[yellow]⚠[/yellow]  {msg}")
+    console.print(f"[yellow]!![/yellow]  {msg}")
 
 
 # ---------------------------------------------------------------------------

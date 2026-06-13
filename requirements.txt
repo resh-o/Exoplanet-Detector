@@ -1,7 +1,5 @@
-# Versions pinned for Python 3.13 compatibility.
-# For Python 3.10 / 3.11 you can use astropy==5.3.4 + numpy==1.26.4 instead.
 lightkurve==2.4.2
-astropy==7.2.0
+astropy==7.0.0
 numpy==2.4.6
 scipy==1.15.3
 matplotlib==3.10.3
@@ -9,7 +7,4 @@ click==8.1.8
 rich==13.9.4
 pandas==2.2.3
 requests==2.32.3
-
-# TensorFlow (CNN classifier). Optional — without it the heuristic fallback runs.
-# tensorflow==2.13.0 requires Python <=3.11. Use 2.20.0 on Python 3.13.
-tensorflow==2.20.0
+tensorflow==2.19.0
