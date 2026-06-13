@@ -25,7 +25,6 @@ from rich.table import Table
 # Pipeline imports are deferred to inside command functions so that `--help`
 # works even when optional heavy dependencies (lightkurve, tensorflow) are
 # not yet installed.
-_BLS_POWER_THRESHOLD = 10.0  # mirrors pipeline/bls.py default
 
 # ---------------------------------------------------------------------------
 # Logging setup
@@ -376,6 +375,9 @@ def _print_summary_panel(results: dict) -> None:
     depth_str = (
         f"{bls['depth'] * 1e6:.0f} ppm" if bls.get("depth") else "N/A"
     )
+    snr_str = (
+        f"{bls['peak_snr']:.1f} σ" if bls.get("peak_snr") else "N/A"
+    )
 
     if not clf:
         label_str = "N/A — no significant signal"
@@ -402,6 +404,7 @@ def _print_summary_panel(results: dict) -> None:
         f"[bold]Mission:[/bold]          {results.get('mission', 'N/A')}\n"
         f"[bold]Best Period:[/bold]      {period_str}\n"
         f"[bold]Transit Depth:[/bold]    {depth_str}\n"
+        f"[bold]BLS Peak SNR:[/bold]     {snr_str}\n"
         f"[bold]Classification:[/bold]   [{colour}]{label_str}[/{colour}]\n"
         f"[bold]Confidence Score:[/bold] {score_str}\n"
         f"[bold]Archive Match:[/bold]    {archive_str}\n"

@@ -17,8 +17,12 @@ from lightkurve import LightCurve
 
 logger = logging.getLogger(__name__)
 
-# Minimum BLS power below which no significant signal is declared.
-BLS_POWER_THRESHOLD = 10.0
+# Sigma above the BLS noise floor required to declare a significant signal.
+# The astropy BLS 'likelihood' objective produces power values on the scale of
+# depth^2/variance, which varies widely with dataset properties. We therefore
+# use a scale-free significance criterion: peak power > BLS_SNR_THRESHOLD *
+# sigma above the median of the full periodogram.
+BLS_POWER_THRESHOLD = 5.0  # kept for API compatibility (now = SNR threshold)
 
 # Period search bounds (days).
 _P_MIN = 0.5
@@ -114,19 +118,29 @@ def find_best_period(
     # --- Top-3 peaks (exclude regions within 10 % of the best period) ---
     top_candidates = _extract_top_candidates(periods, powers, result, n=3)
 
-    significant = best_power > BLS_POWER_THRESHOLD
+    # Significance: peak SNR above the periodogram noise floor.
+    # Using MAD-based sigma to be robust to a single dominant peak.
+    median_power = float(np.median(powers))
+    mad = float(np.median(np.abs(powers - median_power)))
+    sigma = 1.4826 * mad  # robust sigma (= std for Gaussian noise)
+    peak_snr = (best_power - median_power) / sigma if sigma > 0 else 0.0
+
+    significant = peak_snr >= BLS_POWER_THRESHOLD
     if not significant:
         logger.warning(
-            "BLS power %.2f is below threshold %.2f — no significant signal.",
-            best_power,
+            "BLS peak SNR %.2f < threshold %.1f — no significant signal "
+            "(power=%.2e, median=%.2e).",
+            peak_snr,
             BLS_POWER_THRESHOLD,
+            best_power,
+            median_power,
         )
     else:
         logger.info(
-            "Best period: %.4f d | depth: %.0f ppm | power: %.1f",
+            "Best period: %.4f d | depth: %.0f ppm | SNR: %.1f",
             best_period,
             best_depth * 1e6,
-            best_power,
+            peak_snr,
         )
 
     # --- Save periodogram plot ---
@@ -144,6 +158,7 @@ def find_best_period(
         "transit_duration": best_duration,
         "depth": best_depth,
         "power": best_power,
+        "peak_snr": round(peak_snr, 2),
         "top_candidates": top_candidates,
         "significant": significant,
     }
