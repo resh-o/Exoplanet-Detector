@@ -22,8 +22,60 @@ cd parallax
 pip install -r requirements.txt
 ```
 
-Python 3.10+ is required. TensorFlow is optional; if not installed, Parallax
-automatically uses the built-in heuristic classifier.
+TensorFlow is optional; if not installed, Parallax automatically uses the
+built-in heuristic classifier.
+
+**Quick setup (creates an isolated venv automatically):**
+
+```bash
+# Windows
+setup.bat
+
+# macOS / Linux
+bash setup.sh
+```
+
+---
+
+## Known Compatibility Notes
+
+The dependency stack has several hard constraints caused by numpy 2.0 breaking
+changes and astropy C-extension wheel availability. The `requirements.txt` is
+pinned to versions that are verified to install from pre-built wheels with no
+C compiler required.
+
+### Python 3.13 (current `requirements.txt`)
+
+| Package | Pinned version | Why this version |
+|---------|---------------|-----------------|
+| `numpy` | `2.4.6` | Newest stable; Python 3.13 wheels available. |
+| `astropy` | `7.2.0` | First astropy line with Python 3.13 wheels **and** full numpy 2.x compatibility. astropy 5.x / 6.x call `np.in1d` which numpy 2.0 removed; astropy 6.1.x also has a broken `_set_defaults` logger method. |
+| `lightkurve` | `2.4.2` | Works with astropy 7.x (requires `astropy>=5.0`). |
+
+### Python 3.10 / 3.11 (alternative pinned stack)
+
+If you are on Python 3.10 or 3.11 you can substitute these versions, which
+use smaller pre-built wheels and have a lighter memory footprint:
+
+```
+astropy==5.3.4
+numpy==1.26.4
+scipy==1.11.4
+matplotlib==3.7.5
+```
+
+> **Note:** Do **not** mix astropy 5.x with numpy 2.x — astropy 5.x calls
+> `np.in1d` which was removed in numpy 2.0 and will raise an `AttributeError`
+> on import.
+
+Always install inside a virtual environment so system packages do not interfere:
+
+```bash
+python -m venv venv
+# Windows:   venv\Scripts\activate
+# Mac/Linux: source venv/bin/activate
+pip install -r requirements.txt
+```
 
 ---
 

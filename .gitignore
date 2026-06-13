@@ -21,6 +21,8 @@ lib64/
 MANIFEST
 .Python
 develop-eggs/
+setup.bat
+setup.sh
 
 # ============================================
 # Virtual Environments

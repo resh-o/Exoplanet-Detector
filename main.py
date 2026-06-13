@@ -12,7 +12,7 @@ import csv
 import json
 import logging
 import sys
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Optional
 
@@ -106,7 +106,7 @@ class Pipeline:
             RuntimeError: Propagated from any failing pipeline stage.
         """
         display_name = star_name or f"KIC {kic_id}"
-        started = datetime.utcnow()
+        started = datetime.now(timezone.utc).replace(tzinfo=None)
 
         console.rule(f"[bold cyan]Parallax[/bold cyan] — {display_name}")
 
