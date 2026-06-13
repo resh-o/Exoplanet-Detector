@@ -22,13 +22,10 @@ from rich.console import Console
 from rich.panel import Panel
 from rich.table import Table
 
-from pipeline.bls import BLS_POWER_THRESHOLD
-from pipeline.downloader import download_lightcurve
-from pipeline.preprocessor import preprocess
-from pipeline.bls import find_best_period
-from pipeline.folder import phase_fold
-from pipeline.classifier import classify, train_model
-from pipeline.validator import validate_against_archive
+# Pipeline imports are deferred to inside command functions so that `--help`
+# works even when optional heavy dependencies (lightkurve, tensorflow) are
+# not yet installed.
+_BLS_POWER_THRESHOLD = 10.0  # mirrors pipeline/bls.py default
 
 # ---------------------------------------------------------------------------
 # Logging setup
@@ -114,12 +111,20 @@ class Pipeline:
 
         console.rule(f"[bold cyan]Parallax[/bold cyan] — {display_name}")
 
+        # Lazy imports so the CLI works even when heavy deps are absent.
+        import numpy as np
+        from pipeline.downloader import download_lightcurve
+        from pipeline.preprocessor import preprocess
+        from pipeline.bls import find_best_period
+        from pipeline.folder import phase_fold
+        from pipeline.classifier import classify
+        from pipeline.validator import validate_against_archive
+
         # ── Stage 1: Download ────────────────────────────────────────────────
         _status("Downloading light curve…")
         lc = download_lightcurve(
             star_name=star_name, kic_id=kic_id, mission=mission
         )
-        import numpy as np
         n_points = len(lc)
         time_span = float(
             np.nanmax(lc.time.value) - np.nanmin(lc.time.value)
